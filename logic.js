@@ -1,9 +1,10 @@
 export const CART_KEY='klyuch-preview-cart-v1';
 export function normalizeCart(value, products) {
  if(!Array.isArray(value)) return [];
- const valid=new Set(products.filter(p=>Number.isFinite(p.price)&&p.price>0).map(p=>p.id));
+ const valid=new Map(products.filter(p=>Number.isFinite(p.price)&&p.price>0).map(p=>[p.id,p]));
  const entries=new Map();
- for(const row of value) if(row && valid.has(row.id) && Number.isInteger(row.quantity) && row.quantity>0) entries.set(row.id,Math.min(99,(entries.get(row.id)||0)+row.quantity));
+ for(const row of value) if(row && valid.has(row.id) && Number.isInteger(row.quantity) && row.quantity>0) entries.set(row.id,Math.min(valid.get(row.id).addon?1:99,(entries.get(row.id)||0)+row.quantity));
+ if(![...entries.keys()].some(id=>!valid.get(id).addon))return [];
  return [...entries].map(([id,quantity])=>({id,quantity}));
 }
 export function selectProducts(products,{collection='all',budget='',search='',sort='curated'}={}) {

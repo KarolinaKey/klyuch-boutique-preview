@@ -34,3 +34,14 @@ test('phone allows formatted numbers but requires 10 to 15 actual digits',()=>{
  assert.equal(shop.validPhone('abc1234567890'),false);
  assert.equal(shop.validPhone('123'),false);
 });
+const withExtras=[...products,{id:'vase',price:1200,addon:true},{id:'card',price:150,addon:true}];
+test('extras require a bouquet and can only be selected once',()=>{
+ assert.deepEqual(shop.normalizeCart([{id:'vase',quantity:1}],withExtras),[]);
+ assert.deepEqual(shop.normalizeCart([{id:'a',quantity:1},{id:'vase',quantity:2},{id:'vase',quantity:1}],withExtras),[{id:'a',quantity:1},{id:'vase',quantity:1}]);
+});
+test('extras add to subtotal, survive storage, and do not multiply delivery',()=>{
+ const basket=[{id:'b',quantity:1},{id:'vase',quantity:1},{id:'card',quantity:1}];
+ assert.equal(shop.total(basket,withExtras,'local').total,4700);
+ assert.deepEqual(shop.loadCart({getItem(){return JSON.stringify(basket)}},withExtras),basket);
+ assert.equal(shop.total([{id:'vase',quantity:1}],withExtras,'local').total,0);
+});
