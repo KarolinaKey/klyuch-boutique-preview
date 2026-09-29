@@ -22,3 +22,5 @@ export function loadCart(storage,products) {try{return normalizeCart(JSON.parse(
 export function saveCart(storage,cart) {try{storage.setItem(CART_KEY,JSON.stringify(cart));return true;}catch{return false;}}
 
 export function validPhone(value){return /^[+0-9 ()-]+$/.test(value)&&value.replace(/\D/g,'').length>=10&&value.replace(/\D/g,'').length<=15;}
+
+export function recipientLine(fields){const parts=[fields.recipient,fields.recipientPhone].map(v=>String(v??'').trim()).filter(Boolean);return parts.length?'Получатель: '+parts.join(', '):'';}

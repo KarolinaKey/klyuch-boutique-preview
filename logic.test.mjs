@@ -45,3 +45,13 @@ test('extras add to subtotal, survive storage, and do not multiply delivery',()=
  assert.deepEqual(shop.loadCart({getItem(){return JSON.stringify(basket)}},withExtras),basket);
  assert.equal(shop.total([{id:'vase',quantity:1}],withExtras,'local').total,0);
 });
+
+
+test('recipient phone is retained without a name in order text',async()=>{
+ const logic=await import('./logic.js');
+ assert.equal(typeof logic.recipientLine,'function');
+ assert.equal(logic.recipientLine({recipient:'',recipientPhone:'+7 000 111-22-33'}),'Получатель: +7 000 111-22-33');
+ assert.equal(logic.recipientLine({recipient:'Анна',recipientPhone:''}),'Получатель: Анна');
+ assert.equal(logic.recipientLine({recipient:' Анна ',recipientPhone:' +7 000 111-22-33 '}),'Получатель: Анна, +7 000 111-22-33');
+ assert.equal(logic.recipientLine({recipient:' ',recipientPhone:''}),'');
+});
